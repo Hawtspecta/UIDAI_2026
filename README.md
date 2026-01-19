@@ -161,7 +161,7 @@ pip install pandas numpy scipy scikit-learn matplotlib seaborn plotly openpyxl
 
 ### Installation
 ```bash
-git clone <repository-url>
+git clone <https://github.com/Hawtspecta/UIDAI_2026.git>
 cd UIDAI_2026
 pip install -r requirements.txt
 ```
@@ -275,9 +275,21 @@ All three UIDAI-provided datasets integrated:
 
 ## 👥 Team
 
-**Team Member:** [Your Name]  
-**Institution:** [Your Institution]  
-**Contact:** [Your Email]
+**Team Leader:** [Sahana Nayak]  
+**Institution:** [Dwarkadas J Sanghvi College of Engineering]  
+**Contact:** [nayaksahana0307@gmail.com]
+
+**Team Member:** [Anushka Dwivedi]  
+**Institution:** [Dwarkadas J Sanghvi College of Engineering]  
+**Contact:** [anushkadwivedi75@gmail.com]
+
+**Team Member:** [Shriya Ketkar]  
+**Institution:** [Dwarkadas J Sanghvi College of Engineering]  
+**Contact:** [shriyaketkar10@gmail.com]
+
+**Team Member:** [Labdhi Shah]  
+**Institution:** [Dwarkadas J Sanghvi College of Engineering]  
+**Contact:** [engineeringlabs28@gmail.com]
 
 ---
 
@@ -298,9 +310,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact
 
 For questions or collaboration:
-- **Email:** [your-email@example.com]
-- **GitHub:** [your-github-username]
-- **LinkedIn:** [your-linkedin-profile]
+- **Email:** [nayaksahana0307@gmail.com]
+- **GitHub:** [Hawtspecta]
+- **LinkedIn:** [(https://www.linkedin.com/in/sahana-s-nayak)]
 
 ---
 

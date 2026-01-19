@@ -15,7 +15,7 @@ cells = []
 cells.append(nbf.v4.new_markdown_cell("""# UIDAI Hackathon 2026 - Update Friction Index (UFI) Analysis
 ## Exploratory Data Analysis & Methodology Walkthrough
 
-**Team:** [Your Name]  
+**Team:** [Aha Tamatar]  
 **Date:** January 2026
 
 ---
