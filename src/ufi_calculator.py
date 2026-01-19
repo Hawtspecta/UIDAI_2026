@@ -5,6 +5,7 @@ Composite Update Friction Index Construction
 Methodology: PCA-based weighting for data-driven component importance
 """
 
+from tokenize import group
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -136,6 +137,19 @@ class UFICalculator:
         
         # Normalize components
         self.normalize_components()
+
+        # Apply state-specific normalization first
+        self.state_specific_normalization()
+
+        # 🔒 Outlier clipping (critical for PCA stability)
+        print("🔧 Clipping extreme values (1%–99%)...")
+        for col in self.feature_cols:
+            if col in self.components.columns:
+                lower = self.components[col].quantile(0.01)
+                upper = self.components[col].quantile(0.99)
+                self.components[col] = self.components[col].clip(lower, upper)
+
+        print("   ✅ Outlier clipping complete")    
         
         # Calculate weights
         if weighting_method == 'pca':
@@ -150,7 +164,7 @@ class UFICalculator:
         # Compute UFI as weighted sum
         print("\n🔧 Computing weighted UFI scores...")
         
-        normalized_cols = [f'{col}_normalized' for col in self.feature_cols]
+        normalized_cols = [f'{col}_state_norm' for col in self.feature_cols]       
         
         ufi_scores = np.zeros(len(self.components))
         
@@ -166,6 +180,9 @@ class UFICalculator:
             bins=[0, 25, 50, 75, 100],
             labels=['Low Friction', 'Moderate Friction', 'High Friction', 'Very High Friction']
         )
+
+        # Apply per-capita weighting
+        self.apply_per_capita_weighting()
         
         print("   ✅ UFI computed successfully")
         print(f"\n   📊 UFI Statistics:")
@@ -232,6 +249,51 @@ class UFICalculator:
         state_path = f'{output_dir}/state_ufi_summary.csv'
         self.get_state_summary().to_csv(state_path, index=False)
         print(f"💾 Saved state summary to: {state_path}")
+
+    def state_specific_normalization(self):
+        """
+        Normalize components within each state to remove metro / rural bias
+        """
+        print("🔧 Applying state-specific normalization...")
+
+        for col in self.feature_cols:
+            if col not in self.components.columns:
+                continue
+
+            norm_col = f'{col}_state_norm'
+            self.components[norm_col] = 0.0
+            
+            for state, group in self.components.groupby('state'):
+                min_val = group[col].min()
+                max_val = group[col].max()
+
+                if max_val - min_val > 0:
+                    self.components.loc[group.index, norm_col] = (
+                        (group[col] - min_val) / (max_val - min_val)
+                    ) * 100
+                
+                else:
+                    self.components.loc[group.index, norm_col] = 0
+
+        print("   ✅ State-level normalization complete")
+  
+    def apply_per_capita_weighting(self):
+        """
+        Weight UFI score by enrollment-based population proxy
+        """
+        print("🔧 Applying per-capita (enrollment-weighted) adjustment...")
+
+        if 'total_enrollments' not in self.components.columns:
+            print("⚠️ total_enrollments missing — skipping per-capita weighting")
+            return
+
+        # Normalize enrollment weights
+        weights = self.components['total_enrollments']
+        weights = weights / weights.max()
+
+        self.components['UFI_weighted'] = self.components['UFI'] * weights
+        print("   ✅ Per-capita weighting applied")
+
 
 
 # USAGE EXAMPLE

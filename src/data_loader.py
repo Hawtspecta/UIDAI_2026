@@ -8,6 +8,11 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
+from cleaning.uidai_semantic_cleaner import (
+    clean_enrollment,
+    clean_biometric,
+    clean_demographic
+)
 
 class AadhaarDataLoader:
     """
@@ -118,6 +123,7 @@ class AadhaarDataLoader:
         print(f"📊 Loading enrollment data: {file.name}")
         df = self._read_file(file)
         df = self._standardize_df(df)
+        df = clean_enrollment(df)
 
         self.enrollment_data = df
         print(f"✅ Loaded {len(df):,} enrollment records")
@@ -137,6 +143,7 @@ class AadhaarDataLoader:
         print(f"📊 Loading biometric data: {file.name}")
         df = self._read_file(file)
         df = self._standardize_df(df)
+        df = clean_biometric(df)
 
         self.biometric_data = df
         print(f"✅ Loaded {len(df):,} biometric update records")
@@ -156,6 +163,7 @@ class AadhaarDataLoader:
         print(f"📊 Loading demographic data: {file.name}")
         df = self._read_file(file)
         df = self._standardize_df(df)
+        df = clean_demographic(df)
 
         self.demographic_data = df
         print(f"✅ Loaded {len(df):,} demographic update records")

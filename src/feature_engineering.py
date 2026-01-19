@@ -62,6 +62,13 @@ class UFIFeatureEngine:
             on=['state', 'district'],
             how='outer'
         ).fillna(0)
+
+        MIN_ENROLLMENTS = 1000
+        before = len(merged)
+        merged = merged[merged['total_enrollments'] >= MIN_ENROLLMENTS]
+        after = len(merged)
+
+        print(f"🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
         
         merged['demo_update_intensity'] = np.where(
             merged['total_enrollments'] > 0,
@@ -72,7 +79,7 @@ class UFIFeatureEngine:
         print(f"   ✅ Range: {merged['demo_update_intensity'].min():.2f} - {merged['demo_update_intensity'].max():.2f}")
         print(f"   ✅ Mean: {merged['demo_update_intensity'].mean():.2f}")
         
-        return merged[['state', 'district', 'demo_update_intensity']]
+        return merged[['state', 'district', 'demo_update_intensity', 'total_enrollments']]
     
     def calculate_biometric_refresh_rate(self):
         """
@@ -120,7 +127,7 @@ class UFIFeatureEngine:
         High value = High generational inequality
         """
         print("🔧 Calculating Component 3: Age Group Update Disparity...")
-        
+
         # Aggregate by district
         demo_age = self.demo.groupby(['state', 'district']).agg({
             'demo_age_5_17': 'sum',
@@ -147,6 +154,16 @@ class UFIFeatureEngine:
             (merged['demo_age_17_'] / merged['age_18_greater']) * 100,
             0
         )
+
+       # Aggregate total enrollments per district
+        merged['total_enrollments'] = merged[['age_0_5', 'age_5_17', 'age_18_greater']].sum(axis=1)
+
+        MIN_ENROLLMENTS = 1000
+        before = len(merged)
+        merged = merged[merged['total_enrollments'] >= MIN_ENROLLMENTS]
+        after = len(merged)
+
+        print(f"🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
         
         merged['age_disparity'] = abs(merged['young_update_rate'] - merged['elder_update_rate'])
         
@@ -154,6 +171,7 @@ class UFIFeatureEngine:
         print(f"   ✅ Mean: {merged['age_disparity'].mean():.2f}")
         
         return merged[['state', 'district', 'age_disparity']]
+        
     
     def calculate_update_enrollment_ratio(self):
         """
@@ -207,6 +225,13 @@ class UFIFeatureEngine:
             on=['state', 'district'],
             how='outer'
         ).fillna(0)
+
+        MIN_ENROLLMENTS = 1000
+        before = len(merged)
+        merged = merged[merged['total_enrollments'] >= MIN_ENROLLMENTS]
+        after = len(merged)
+
+        print(f"🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
         
         merged['update_enrol_ratio'] = np.where(
             merged['total_enrollments'] > 0,
