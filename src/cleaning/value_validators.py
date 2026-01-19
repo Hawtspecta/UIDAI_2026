@@ -1,21 +1,24 @@
 # src/cleaning/value_validators.py
 
+
 def validate_non_negative(df, cols):
     for col in cols:
         if col in df.columns:
             df = df[df[col] >= 0]
     return df
 
+
 def validate_age_consistency(df):
     """
     Enrollments: age_0_5 + age_5_17 + age_18_greater > 0
     """
-    required = ['age_0_5', 'age_5_17', 'age_18_greater']
+    required = ["age_0_5", "age_5_17", "age_18_greater"]
     if not all(c in df.columns for c in required):
         return df
 
-    total = df['age_0_5'] + df['age_5_17'] + df['age_18_greater']
+    total = df["age_0_5"] + df["age_5_17"] + df["age_18_greater"]
     return df[total > 0]
+
 
 def validate_update_bounds(df, update_cols, enrol_cols):
     """
@@ -30,8 +33,10 @@ def validate_update_bounds(df, update_cols, enrol_cols):
     # Allow 3x as extreme outlier tolerance
     return df[updates <= enrol * 3]
 
+
 import pandas as pd
 from pathlib import Path
+
 
 def run_uidai_validations():
     """
@@ -59,7 +64,7 @@ def run_uidai_validations():
         total_rows += len(df)
 
         # Check numeric columns
-        numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+        numeric_cols = df.select_dtypes(include=["float64", "int64"]).columns
 
         for col in numeric_cols:
             if (df[col] < 0).any():
@@ -67,16 +72,20 @@ def run_uidai_validations():
                 issues_found += 1
 
         # Check failures > total_enrollments
-        if 'failures' in df.columns and 'total_enrollments' in df.columns:
-            mask = df['failures'] > df['total_enrollments']
+        if "failures" in df.columns and "total_enrollments" in df.columns:
+            mask = df["failures"] > df["total_enrollments"]
             if mask.any():
-                print(f"⚠ Failures > total_enrollments in file {f.name}: {mask.sum()} rows")
+                print(
+                    f"⚠ Failures > total_enrollments in file {f.name}: {mask.sum()} rows"
+                )
                 issues_found += mask.sum()
 
         # Check missing districts/states
-        for col in ['district', 'state']:
+        for col in ["district", "state"]:
             if col in df.columns and df[col].isna().any():
-                print(f"⚠ Missing values in {col} column of file {f.name}: {df[col].isna().sum()} rows")
+                print(
+                    f"⚠ Missing values in {col} column of file {f.name}: {df[col].isna().sum()} rows"
+                )
                 issues_found += df[col].isna().sum()
 
     print(f"✔ Total rows scanned: {total_rows}")

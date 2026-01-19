@@ -5,55 +5,44 @@ DISTRICT_MAP = {
     "Bangalore Urban": "Bengaluru Urban",
     "Bangalore Rural": "Bengaluru Rural",
     "Bijapur(Kar)": "Vijayapura",
-
-    # Maharashtra 
+    # Maharashtra
     "Mumbai Suburban": "Mumbai",
     "Mumbai( Sub Urban )": "Mumbai",
     "Ahmed Nagar": "Ahmednagar",
     "Ahmadnagar": "Ahmednagar",
     "Chatrapati Sambhaji Nagar": "Chhatrapati Sambhajinagar",
     "Chhatrapati Sambhaji Nagar": "Chhatrapati Sambhajinagar",
-
     # UP cleanup
     "Gautam Buddha Nagar *": "Gautam Buddha Nagar",
-
     # Haryana
     "Gurgaon": "Gurugram",
-
     # Bihar
     "Aurangabad(Bh)": "Aurangabad",
-
     # West Bengal
     "North 24 Parganas": "24 North Parganas",
     "South 24 Parganas": "24 South Parganas",
-
     # Odisha
     "Orissa": "Odisha",
     "Anugul": "Angul",
     "Angul": "Angul",
     "Balangir": "Balangir",
-
     # Telangana / AP split
     "Ranga Reddy": "Rangareddy",
     "Warangal (Urban)": "Warangal",
     "Warangal Rural": "Warangal",
     "Warangal Urban": "Warangal",
-
     # Dadra & Nagar Haveli variants
     "Dadra & Nagar Haveli": "Dadra And Nagar Haveli",
     "Dadra and Nagar Haveli": "Dadra And Nagar Haveli",
-    
-
     # Delhi
     "Central Delhi": "Delhi",
     "East Delhi": "Delhi",
     "North Delhi": "Delhi",
     "South Delhi": "Delhi",
     "West Delhi": "Delhi",
-
     # Generic noise
     "Urban": None,
-    "Rural": None
+    "Rural": None,
 }
 
 
@@ -71,25 +60,22 @@ ADDRESS_PATTERNS = [
     r"\bPhase\b",
     r"\bSector\b",
     r"\bBlock\b",
-    r"\bColony\b"
+    r"\bColony\b",
 ]
 
+
 def canonicalize_districts(df):
-    df['district'] = df['district'].astype(str).str.strip().str.title()
+    df["district"] = df["district"].astype(str).str.strip().str.title()
 
     # Identify address-like entries
-    address_regex = '|'.join(ADDRESS_PATTERNS)
-    mask_address = df['district'].str.contains(
-        address_regex,
-        regex=True,
-        na=False
-    )
+    address_regex = "|".join(ADDRESS_PATTERNS)
+    mask_address = df["district"].str.contains(address_regex, regex=True, na=False)
 
     # Force invalid districts to NULL
-    df.loc[mask_address, 'district'] = None
+    df.loc[mask_address, "district"] = None
 
     # Apply canonical district mapping
-    df['district'] = df['district'].replace(DISTRICT_MAP)
+    df["district"] = df["district"].replace(DISTRICT_MAP)
 
     return df
 
@@ -97,12 +83,9 @@ def canonicalize_districts(df):
 import pandas as pd
 from pathlib import Path
 
+
 def is_address_like(series):
-    return series.str.contains(
-        '|'.join(ADDRESS_PATTERNS),
-        regex=True,
-        na=False
-    )
+    return series.str.contains("|".join(ADDRESS_PATTERNS), regex=True, na=False)
 
 
 def audit_districts():
@@ -125,33 +108,26 @@ def audit_districts():
         except Exception:
             continue
 
-        if 'district' in df.columns:
-            raw_districts.update(df['district'].dropna().unique())
+        if "district" in df.columns:
+            raw_districts.update(df["district"].dropna().unique())
 
     raw_districts = sorted(raw_districts)
 
-    df_audit = pd.DataFrame({'district': raw_districts})
-    df_audit = df_audit[
-        ~df_audit['district'].str.match(r"^\d+.*", na=False)
-    ]
+    df_audit = pd.DataFrame({"district": raw_districts})
+    df_audit = df_audit[~df_audit["district"].str.match(r"^\d+.*", na=False)]
 
-    df_audit['canonical'] = (
-        df_audit['district']
-        .astype(str)
-        .str.strip()
-        .str.title()
-        .replace(DISTRICT_MAP)
+    df_audit["canonical"] = (
+        df_audit["district"].astype(str).str.strip().str.title().replace(DISTRICT_MAP)
     )
 
     # Drop rows where canonical district is null or empty
     df_audit = df_audit[
-        df_audit['canonical'].notna() &
-        (df_audit['canonical'].str.lower() != 'none')
+        df_audit["canonical"].notna() & (df_audit["canonical"].str.lower() != "none")
     ]
 
-    df_audit = df_audit[~is_address_like(df_audit['district'])]
+    df_audit = df_audit[~is_address_like(df_audit["district"])]
 
-    merged = df_audit[df_audit['district'] != df_audit['canonical']]
+    merged = df_audit[df_audit["district"] != df_audit["canonical"]]
 
     print(f"✔ Total raw districts found: {len(raw_districts)}")
     print(f"✔ Canonical merges applied: {len(merged)}")
@@ -160,23 +136,16 @@ def audit_districts():
         print("✔ Sample merges:")
         print(merged.head(10).to_string(index=False))
 
-    VALID_SUFFIXES = [
-        "Bengaluru Urban",
-        "Bengaluru Rural"
-    ]
+    VALID_SUFFIXES = ["Bengaluru Urban", "Bengaluru Rural"]
 
     unresolved = df_audit[
-        df_audit['canonical'].str.contains(
-            r"\bNear\b|\bRoad\b|\bCross\b|\bHospital\b|\bThana\b",
-            regex=True,
-            na=False
-        ) 
+        df_audit["canonical"].str.contains(
+            r"\bNear\b|\bRoad\b|\bCross\b|\bHospital\b|\bThana\b", regex=True, na=False
+        )
     ]
-
 
     if unresolved.empty:
         print("✔ No unresolved UIDAI-style district patterns found")
     else:
         print("⚠ Unresolved district patterns detected:")
         print(unresolved.head(10).to_string(index=False))
-

@@ -312,7 +312,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For questions or collaboration:
 - **Email:** [nayaksahana0307@gmail.com]
 - **GitHub:** [Hawtspecta]
-- **LinkedIn:** [(https://www.linkedin.com/in/sahana-s-nayak)]
+- **LinkedIn:** [https://www.linkedin.com/in/sahana-s-nayak]
 
 ---
 
