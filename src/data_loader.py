@@ -18,16 +18,22 @@ class AadhaarDataLoader:
         self.biometric_data = None
         self.demographic_data = None
         
-    def load_enrollment_data(self, sample_size='500000'):
+    def load_enrollment_data(self):
         """Load enrollment dataset"""
-        pattern = f'*enrolment*{sample_size}*'
-        files = list(self.data_dir.glob(pattern))
+        data_path = self.data_dir / 'api_data_aadhar_enrolment'
+        files = list(data_path.glob('*.csv'))
         
         if not files:
-            raise FileNotFoundError(f"No enrollment file found matching: {pattern}")
+            raise FileNotFoundError(f"No enrollment files found in: {data_path}")
         
-        print(f"📊 Loading enrollment data: {files[0].name}")
-        df = pd.read_excel(files[0])
+        print(f"📊 Loading enrollment data from {len(files)} files...")
+        dfs = []
+        for file in files:
+            print(f"   Loading: {file.name}")
+            df = pd.read_csv(file)
+            dfs.append(df)
+        
+        df = pd.concat(dfs, ignore_index=True)
         
         # Standardize column names
         df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
@@ -46,16 +52,22 @@ class AadhaarDataLoader:
         
         return df
     
-    def load_biometric_data(self, sample_size='500'):
+    def load_biometric_data(self):
         """Load biometric update dataset"""
-        pattern = f'*biometric*{sample_size}*'
-        files = list(self.data_dir.glob(pattern))
+        data_path = self.data_dir / 'api_data_aadhar_biometric'
+        files = list(data_path.glob('*.csv'))
         
         if not files:
-            raise FileNotFoundError(f"No biometric file found matching: {pattern}")
+            raise FileNotFoundError(f"No biometric files found in: {data_path}")
         
-        print(f"📊 Loading biometric data: {files[0].name}")
-        df = pd.read_excel(files[0])
+        print(f"📊 Loading biometric data from {len(files)} files...")
+        dfs = []
+        for file in files:
+            print(f"   Loading: {file.name}")
+            df = pd.read_csv(file)
+            dfs.append(df)
+        
+        df = pd.concat(dfs, ignore_index=True)
         
         # Standardize column names
         df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
@@ -73,16 +85,22 @@ class AadhaarDataLoader:
         
         return df
     
-    def load_demographic_data(self, sample_size='500'):
+    def load_demographic_data(self):
         """Load demographic update dataset"""
-        pattern = f'*demographic*{sample_size}*'
-        files = list(self.data_dir.glob(pattern))
+        data_path = self.data_dir / 'api_data_aadhar_demographic'
+        files = list(data_path.glob('*.csv'))
         
         if not files:
-            raise FileNotFoundError(f"No demographic file found matching: {pattern}")
+            raise FileNotFoundError(f"No demographic files found in: {data_path}")
         
-        print(f"📊 Loading demographic data: {files[0].name}")
-        df = pd.read_excel(files[0])
+        print(f"📊 Loading demographic data from {len(files)} files...")
+        dfs = []
+        for file in files:
+            print(f"   Loading: {file.name}")
+            df = pd.read_csv(file)
+            dfs.append(df)
+        
+        df = pd.concat(dfs, ignore_index=True)
         
         # Standardize column names
         df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
@@ -104,9 +122,9 @@ class AadhaarDataLoader:
         """Load all three datasets"""
         print("🚀 Loading all UIDAI datasets...\n")
         
-        self.load_enrollment_data(sample_size='500')
-        self.load_biometric_data(sample_size='500')
-        self.load_demographic_data(sample_size='500')
+        self.load_enrollment_data()
+        self.load_biometric_data()
+        self.load_demographic_data()
         
         print("\n✅ ALL DATASETS LOADED SUCCESSFULLY!")
         return self.enrollment_data, self.biometric_data, self.demographic_data

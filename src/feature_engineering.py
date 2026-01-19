@@ -34,12 +34,12 @@ class UFIFeatureEngine:
         
         # Aggregate demographic updates by district
         demo_agg = self.demo.groupby(['state', 'district']).agg({
-            'demo_age_5': 'sum',
+            'demo_age_5_17': 'sum',
             'demo_age_17_': 'sum'
         }).reset_index()
         
         demo_agg['total_demo_updates'] = (
-            demo_agg['demo_age_5'] + demo_agg['demo_age_17_']
+            demo_agg['demo_age_5_17'] + demo_agg['demo_age_17_']
         )
         
         # Aggregate enrollments by district
@@ -90,12 +90,12 @@ class UFIFeatureEngine:
         
         # Calculate monthly updates by district
         bio_monthly = self.bio.groupby(['state', 'district', 'year_month']).agg({
-            'bio_age_5': 'sum',
+            'bio_age_5_17': 'sum',
             'bio_age_17_': 'sum'
         }).reset_index()
         
         bio_monthly['total_bio_updates'] = (
-            bio_monthly['bio_age_5'] + bio_monthly['bio_age_17_']
+            bio_monthly['bio_age_5_17'] + bio_monthly['bio_age_17_']
         )
         
         # Calculate month-over-month growth rate
@@ -123,7 +123,7 @@ class UFIFeatureEngine:
         
         # Aggregate by district
         demo_age = self.demo.groupby(['state', 'district']).agg({
-            'demo_age_5': 'sum',
+            'demo_age_5_17': 'sum',
             'demo_age_17_': 'sum'
         }).reset_index()
         
@@ -138,7 +138,7 @@ class UFIFeatureEngine:
         # Calculate rates
         merged['young_update_rate'] = np.where(
             (merged['age_0_5'] + merged['age_5_17']) > 0,
-            (merged['demo_age_5'] / (merged['age_0_5'] + merged['age_5_17'])) * 100,
+            (merged['demo_age_5_17'] / (merged['age_0_5'] + merged['age_5_17'])) * 100,
             0
         )
         
@@ -167,16 +167,16 @@ class UFIFeatureEngine:
         
         # Total updates (demo + bio)
         demo_total = self.demo.groupby(['state', 'district']).agg({
-            'demo_age_5': 'sum',
+            'demo_age_5_17': 'sum',
             'demo_age_17_': 'sum'
         }).reset_index()
-        demo_total['total_demo'] = demo_total['demo_age_5'] + demo_total['demo_age_17_']
+        demo_total['total_demo'] = demo_total['demo_age_5_17'] + demo_total['demo_age_17_']
         
         bio_total = self.bio.groupby(['state', 'district']).agg({
-            'bio_age_5': 'sum',
+            'bio_age_5_17': 'sum',
             'bio_age_17_': 'sum'
         }).reset_index()
-        bio_total['total_bio'] = bio_total['bio_age_5'] + bio_total['bio_age_17_']
+        bio_total['total_bio'] = bio_total['bio_age_5_17'] + bio_total['bio_age_17_']
         
         # Merge updates
         updates = pd.merge(
@@ -234,10 +234,10 @@ class UFIFeatureEngine:
         self.demo['year_month'] = self.demo['date'].dt.to_period('M')
         
         demo_monthly = self.demo.groupby(['state', 'district', 'year_month']).agg({
-            'demo_age_5': 'sum',
+            'demo_age_5_17': 'sum',
             'demo_age_17_': 'sum'
         }).reset_index()
-        demo_monthly['monthly_updates'] = demo_monthly['demo_age_5'] + demo_monthly['demo_age_17_']
+        demo_monthly['monthly_updates'] = demo_monthly['demo_age_5_17'] + demo_monthly['demo_age_17_']
         
         # Calculate coefficient of variation by district
         volatility = demo_monthly.groupby(['state', 'district'])['monthly_updates'].agg([
