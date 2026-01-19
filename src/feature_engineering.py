@@ -1,6 +1,11 @@
 """
 UIDAI HACKATHON 2026 - FEATURE ENGINEERING MODULE
-UFI Component Calculation Engine
+UFI Component Calculation Engine - FINAL CORRECTED VERSION
+
+VERIFIED COLUMNS:
+- Enrollment: age_0_5, age_5_17, age_18_greater
+- Biometric: bio_age_5_17, bio_age_17_
+- Demographic: demo_age_5_17, demo_age_17_
 
 The 5 Components of Update Friction Index (UFI):
 1. Demographic Update Intensity (Fluidity Score)
@@ -63,12 +68,13 @@ class UFIFeatureEngine:
             how='outer'
         ).fillna(0)
 
-        MIN_ENROLLMENTS = 1000
+        MIN_ENROLLMENTS = 100
         before = len(merged)
         merged = merged[merged['total_enrollments'] >= MIN_ENROLLMENTS]
         after = len(merged)
 
-        print(f"🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
+        if before - after > 0:
+            print(f"   🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
         
         merged['demo_update_intensity'] = np.where(
             merged['total_enrollments'] > 0,
@@ -92,7 +98,7 @@ class UFIFeatureEngine:
         print("🔧 Calculating Component 2: Biometric Refresh Rate...")
         
         # Ensure date is datetime
-        self.bio['date'] = pd.to_datetime(self.bio['date'])
+        self.bio['date'] = pd.to_datetime(self.bio['date'], format='%d-%m-%Y', errors='coerce')
         self.bio['year_month'] = self.bio['date'].dt.to_period('M')
         
         # Calculate monthly updates by district
@@ -112,6 +118,9 @@ class UFIFeatureEngine:
         # Aggregate to district level (mean growth rate)
         bio_rate = bio_monthly.groupby(['state', 'district'])['bio_refresh_rate'].mean().reset_index()
         bio_rate['bio_refresh_rate'] = bio_rate['bio_refresh_rate'].fillna(0)
+        
+        # Replace inf values with 0
+        bio_rate['bio_refresh_rate'] = bio_rate['bio_refresh_rate'].replace([np.inf, -np.inf], 0)
         
         print(f"   ✅ Range: {bio_rate['bio_refresh_rate'].min():.2f} - {bio_rate['bio_refresh_rate'].max():.2f}")
         print(f"   ✅ Mean: {bio_rate['bio_refresh_rate'].mean():.2f}")
@@ -142,10 +151,11 @@ class UFIFeatureEngine:
         
         merged = pd.merge(demo_age, enrol_age, on=['state', 'district'], how='outer').fillna(0)
         
-        # Calculate rates
+        # Calculate rates - align age groups properly
+        # demo_age_5_17 should be compared to age_5_17 enrollments
         merged['young_update_rate'] = np.where(
-            (merged['age_0_5'] + merged['age_5_17']) > 0,
-            (merged['demo_age_5_17'] / (merged['age_0_5'] + merged['age_5_17'])) * 100,
+            merged['age_5_17'] > 0,
+            (merged['demo_age_5_17'] / merged['age_5_17']) * 100,
             0
         )
         
@@ -155,15 +165,16 @@ class UFIFeatureEngine:
             0
         )
 
-       # Aggregate total enrollments per district
+        # Aggregate total enrollments per district
         merged['total_enrollments'] = merged[['age_0_5', 'age_5_17', 'age_18_greater']].sum(axis=1)
 
-        MIN_ENROLLMENTS = 1000
+        MIN_ENROLLMENTS = 100
         before = len(merged)
         merged = merged[merged['total_enrollments'] >= MIN_ENROLLMENTS]
         after = len(merged)
 
-        print(f"🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
+        if before - after > 0:
+            print(f"   🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
         
         merged['age_disparity'] = abs(merged['young_update_rate'] - merged['elder_update_rate'])
         
@@ -171,7 +182,6 @@ class UFIFeatureEngine:
         print(f"   ✅ Mean: {merged['age_disparity'].mean():.2f}")
         
         return merged[['state', 'district', 'age_disparity']]
-        
     
     def calculate_update_enrollment_ratio(self):
         """
@@ -226,12 +236,13 @@ class UFIFeatureEngine:
             how='outer'
         ).fillna(0)
 
-        MIN_ENROLLMENTS = 1000
+        MIN_ENROLLMENTS = 100
         before = len(merged)
         merged = merged[merged['total_enrollments'] >= MIN_ENROLLMENTS]
         after = len(merged)
 
-        print(f"🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
+        if before - after > 0:
+            print(f"   🧹 Dropped {before - after} low-population districts (<{MIN_ENROLLMENTS} enrollments)")
         
         merged['update_enrol_ratio'] = np.where(
             merged['total_enrollments'] > 0,
@@ -255,7 +266,7 @@ class UFIFeatureEngine:
         print("🔧 Calculating Component 5: Temporal Volatility...")
         
         # Combine all update data with dates
-        self.demo['date'] = pd.to_datetime(self.demo['date'])
+        self.demo['date'] = pd.to_datetime(self.demo['date'], format='%d-%m-%Y', errors='coerce')
         self.demo['year_month'] = self.demo['date'].dt.to_period('M')
         
         demo_monthly = self.demo.groupby(['state', 'district', 'year_month']).agg({
@@ -275,6 +286,9 @@ class UFIFeatureEngine:
             (volatility['std'] / volatility['mean']) * 100,
             0
         )
+        
+        # Replace inf values
+        volatility['temporal_volatility'] = volatility['temporal_volatility'].replace([np.inf, -np.inf], 0)
         
         print(f"   ✅ Range: {volatility['temporal_volatility'].min():.2f} - {volatility['temporal_volatility'].max():.2f}")
         print(f"   ✅ Mean: {volatility['temporal_volatility'].mean():.2f}")
@@ -302,7 +316,7 @@ class UFIFeatureEngine:
                 ufi_components,
                 df,
                 on=['state', 'district'],
-                how='outer'
+                how='inner'  # Inner join to keep only complete records
             )
         
         ufi_components = ufi_components.fillna(0)
@@ -316,16 +330,21 @@ class UFIFeatureEngine:
 # USAGE EXAMPLE
 if __name__ == "__main__":
     from data_loader import AadhaarDataLoader
+    import os
     
     # Load data
+    print("="*60)
+    print("LOADING UIDAI DATASETS")
+    print("="*60)
     loader = AadhaarDataLoader(data_dir='data/raw')
-    enrol_df, bio_df, demo_df = loader.load_all()
+    enrol_df, bio_df, demo_df = loader.load_all(sample_size='500000')
     
     # Calculate UFI components
     engine = UFIFeatureEngine(enrol_df, bio_df, demo_df)
     ufi_components = engine.calculate_all_components()
     
     # Save to processed data
+    os.makedirs('data/processed', exist_ok=True)
     output_path = 'data/processed/ufi_components.csv'
     ufi_components.to_csv(output_path, index=False)
     print(f"\n💾 Saved to: {output_path}")
@@ -334,3 +353,7 @@ if __name__ == "__main__":
     print("COMPONENT STATISTICS")
     print("="*60)
     print(ufi_components.describe())
+    
+    print("\n" + "="*60)
+    print("✅ FEATURE ENGINEERING COMPLETE!")
+    print("="*60)

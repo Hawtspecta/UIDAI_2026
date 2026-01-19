@@ -1,0 +1,433 @@
+{
+  "update_deserts": {
+    "count": 11,
+    "top_10": [
+      {
+        "state": "Bihar",
+        "district": "Pashchim Champaran",
+        "UFI": 0.4273378576100914,
+        "total_enrollments": 16317.0
+      },
+      {
+        "state": "Gujarat",
+        "district": "Banas Kantha",
+        "UFI": 0.5572894397778536,
+        "total_enrollments": 13406.0
+      },
+      {
+        "state": "Gujarat",
+        "district": "Dohad",
+        "UFI": 8.44969454283324,
+        "total_enrollments": 12113.0
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Jhabua",
+        "UFI": 9.599231722255762,
+        "total_enrollments": 9053.0
+      },
+      {
+        "state": "Maharashtra",
+        "district": "Hingoli",
+        "UFI": 3.84159912336612,
+        "total_enrollments": 6601.0
+      },
+      {
+        "state": "Gujarat",
+        "district": "Ahmadabad",
+        "UFI": 2.5794285605812792,
+        "total_enrollments": 6140.0
+      },
+      {
+        "state": "Chhattisgarh",
+        "district": "Bijapur",
+        "UFI": 8.2215596765459,
+        "total_enrollments": 4633.0
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Datia",
+        "UFI": 7.96127125107272,
+        "total_enrollments": 3547.0
+      },
+      {
+        "state": "West Bengal",
+        "district": "Alipurduar",
+        "UFI": 6.883545118024894,
+        "total_enrollments": 3101.0
+      },
+      {
+        "state": "Punjab",
+        "district": "Kapurthala",
+        "UFI": 8.051700523225769,
+        "total_enrollments": 2680.0
+      }
+    ],
+    "interpretation": "Found 11 districts with high population but minimal update activity. These likely face infrastructure or awareness gaps.",
+    "recommendation": "Deploy mobile enrollment units and awareness campaigns in these districts."
+  },
+  "high_friction_zones": {
+    "count": 24,
+    "top_10": [
+      {
+        "state": "Kerala",
+        "district": "Wayanad",
+        "UFI": 94.59581764466624,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Sikkim",
+        "district": "East",
+        "UFI": 90.37783336714968,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Bihar",
+        "district": "Kishanganj",
+        "UFI": 89.97516186490542,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Tripura",
+        "district": "West Tripura",
+        "UFI": 88.6421460229479,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Gujarat",
+        "district": "Narmada",
+        "UFI": 86.56294932158791,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Uttarakhand",
+        "district": "Udham Singh Nagar",
+        "UFI": 85.8391101771172,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Assam",
+        "district": "Bongaigaon",
+        "UFI": 85.17980238041064,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Punjab",
+        "district": "Ferozepur",
+        "UFI": 84.51532712271228,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Tamil Nadu",
+        "district": "Tiruppur",
+        "UFI": 84.15054811275726,
+        "UFI_Category": "Very High Friction"
+      },
+      {
+        "state": "Karnataka",
+        "district": "Hassan",
+        "UFI": 84.14486387731256,
+        "UFI_Category": "Very High Friction"
+      }
+    ],
+    "interpretation": "Found 24 districts experiencing severe system friction. These may indicate migration hotspots, rapid urbanization, or policy change impacts.",
+    "recommendation": "Increase UIDAI center capacity and investigate root causes of high update demand."
+  },
+  "digital_age_gap": {
+    "top_10": [
+      {
+        "state": "Chhattisgarh",
+        "district": "Janjgir-Champa",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 45.27765675134026
+      },
+      {
+        "state": "Chhattisgarh",
+        "district": "Mungeli",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 49.49682961071984
+      },
+      {
+        "state": "Chhattisgarh",
+        "district": "Rajnandgaon",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 74.32105856333413
+      },
+      {
+        "state": "Haryana",
+        "district": "Karnal",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 58.39529880456481
+      },
+      {
+        "state": "Tamil Nadu",
+        "district": "Krishnagiri",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 68.24661637799734
+      },
+      {
+        "state": "Tamil Nadu",
+        "district": "Tiruchirappalli",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 50.872642796791695
+      },
+      {
+        "state": "Tamil Nadu",
+        "district": "Tiruppur",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 84.15054811275726
+      },
+      {
+        "state": "Telangana",
+        "district": "Nizamabad",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 65.84125923520477
+      },
+      {
+        "state": "Uttar Pradesh",
+        "district": "Faizabad",
+        "age_disparity": 1434331.8393760698,
+        "UFI": 52.89890844957674
+      },
+      {
+        "state": "Uttarakhand",
+        "district": "Udham Singh Nagar",
+        "age_disparity": 1389422.8733459355,
+        "UFI": 85.8391101771172
+      }
+    ],
+    "max_gap": 1434331.8393760698,
+    "mean_gap": 121458.85443900955,
+    "interpretation": "These districts show severe intergenerational digital inequality. Elderly populations are significantly less engaged with Aadhaar updates.",
+    "recommendation": "Launch targeted elderly outreach programs with simplified update processes."
+  },
+  "biometric_leaders": {
+    "top_10": [
+      {
+        "state": "Gujarat",
+        "district": "Dahod",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 30.0196990018527
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Betul",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 34.432930985882145
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Damoh",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 56.6856989476396
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Khargone",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 22.611783886430807
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Morena",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 25.55932474291669
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Rajgarh",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 50.14174654574843
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Ratlam",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 56.28147828038092
+      },
+      {
+        "state": "Madhya Pradesh",
+        "district": "Shajapur",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 44.3676373652276
+      },
+      {
+        "state": "Maharashtra",
+        "district": "Wardha",
+        "bio_refresh_rate": 5916.974970932044,
+        "UFI": 73.8150181911923
+      },
+      {
+        "state": "Maharashtra",
+        "district": "Bhandara",
+        "bio_refresh_rate": 5830.015474087191,
+        "UFI": 63.17024657617714
+      }
+    ],
+    "interpretation": "These districts show accelerating biometric update rates, indicating either aging populations requiring re-enrollment or heightened security awareness.",
+    "recommendation": "Study these districts as models for biometric adoption best practices."
+  },
+  "volatile_districts": {
+    "top_10": [
+      {
+        "state": "Chandigarh",
+        "district": "Chandigarh",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 0.0
+      },
+      {
+        "state": "Chhattisgarh",
+        "district": "Mahasamund",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 48.22230363003478
+      },
+      {
+        "state": "Chhattisgarh",
+        "district": "Rajnandgaon",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 74.32105856333413
+      },
+      {
+        "state": "Delhi",
+        "district": "Delhi",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 42.04534524148943
+      },
+      {
+        "state": "Delhi",
+        "district": "North East Delhi",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 60.64860779521741
+      },
+      {
+        "state": "Delhi",
+        "district": "North West Delhi",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 77.16672794669617
+      },
+      {
+        "state": "Delhi",
+        "district": "Shahdara",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 38.2569383335814
+      },
+      {
+        "state": "Delhi",
+        "district": "South West Delhi",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 55.68324379636944
+      },
+      {
+        "state": "Haryana",
+        "district": "Rohtak",
+        "temporal_volatility": 309.9554774933945,
+        "UFI": 30.2801742534881
+      },
+      {
+        "state": "Jammu And Kashmir",
+        "district": "Budgam",
+        "temporal_volatility": 309.54983288741334,
+        "UFI": 77.94014761232371
+      }
+    ],
+    "interpretation": "These districts show erratic update patterns, suggesting seasonal migration, policy shocks, or external events driving sudden demand.",
+    "recommendation": "Implement flexible staffing models to handle demand spikes in these districts."
+  },
+  "state_ranking": {
+    "top_5_friction": [
+      {
+        "state": "Puducherry",
+        "UFI_Mean": 50.0,
+        "UFI_Median": 50.0,
+        "UFI_StdDev": 8.41,
+        "Num_Districts": 2,
+        "Total_Enrollments": 792.0
+      },
+      {
+        "state": "Goa",
+        "UFI_Mean": 50.0,
+        "UFI_Median": 50.0,
+        "UFI_StdDev": 1.59,
+        "Num_Districts": 2,
+        "Total_Enrollments": 1192.0
+      },
+      {
+        "state": "Kerala",
+        "UFI_Mean": 49.89,
+        "UFI_Median": 48.66,
+        "UFI_StdDev": 18.93,
+        "Num_Districts": 15,
+        "Total_Enrollments": 30556.0
+      },
+      {
+        "state": "Tripura",
+        "UFI_Mean": 49.75,
+        "UFI_Median": 45.24,
+        "UFI_StdDev": 22.83,
+        "Num_Districts": 8,
+        "Total_Enrollments": 5344.0
+      },
+      {
+        "state": "Delhi",
+        "UFI_Mean": 47.77,
+        "UFI_Median": 46.94,
+        "UFI_StdDev": 19.93,
+        "Num_Districts": 7,
+        "Total_Enrollments": 63504.0
+      }
+    ],
+    "bottom_5_friction": [
+      {
+        "state": "Assam",
+        "UFI_Mean": 30.16,
+        "UFI_Median": 25.79,
+        "UFI_StdDev": 15.7,
+        "Num_Districts": 34,
+        "Total_Enrollments": 166638.0
+      },
+      {
+        "state": "Ladakh",
+        "UFI_Mean": 0.0,
+        "UFI_Median": 0.0,
+        "UFI_StdDev": NaN,
+        "Num_Districts": 1,
+        "Total_Enrollments": 200.0
+      },
+      {
+        "state": "Chandigarh",
+        "UFI_Mean": 0.0,
+        "UFI_Median": 0.0,
+        "UFI_StdDev": NaN,
+        "Num_Districts": 1,
+        "Total_Enrollments": 1209.0
+      },
+      {
+        "state": "Dadra And Nagar Haveli",
+        "UFI_Mean": 0.0,
+        "UFI_Median": 0.0,
+        "UFI_StdDev": NaN,
+        "Num_Districts": 1,
+        "Total_Enrollments": 436.0
+      },
+      {
+        "state": "Pondicherry",
+        "UFI_Mean": 0.0,
+        "UFI_Median": 0.0,
+        "UFI_StdDev": NaN,
+        "Num_Districts": 1,
+        "Total_Enrollments": 547.0
+      }
+    ],
+    "interpretation": "State-level friction patterns reveal regional policy effectiveness and infrastructure maturity."
+  },
+  "impact_metrics": {
+    "total_districts_analyzed": 817,
+    "mean_ufi": 37.40853205022684,
+    "median_ufi": 35.45031641757993,
+    "high_friction_percentage": 2.937576499388005,
+    "low_friction_percentage": 24.35740514075887,
+    "total_enrollments": 3210841,
+    "districts_needing_intervention": 24,
+    "stable_districts": 594
+  }
+}
