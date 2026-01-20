@@ -147,7 +147,16 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
         return;
       }
 
+      if (!Array.isArray(data) || data.length === 0) {
+        set({
+          ufiData: [],
+          stateStats: [],
+          isLoading: false
+        });
+        return;
+      }
       const stats = generateStateStats(data);
+
       set({
         ufiData: data,
         stateStats: stats,

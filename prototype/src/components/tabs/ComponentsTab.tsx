@@ -20,40 +20,40 @@ import { Layers, Info, TrendingUp, BarChart3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const componentInfo = [
-  { 
-    id: 'demoUpdateIntensity', 
+  {
+    id: 'demoUpdateIntensity',
     name: 'Demographic Update Intensity',
     short: 'Demo Update',
     weight: 28.8,
     description: 'Measures socioeconomic mobility through address and detail changes',
     color: '#3b82f6'
   },
-  { 
-    id: 'updateEnrolRatio', 
+  {
+    id: 'updateEnrolRatio',
     name: 'Update-Enrollment Ratio',
     short: 'Update Ratio',
     weight: 28.1,
     description: 'Measures system load and access patterns',
     color: '#14b8a6'
   },
-  { 
-    id: 'ageDisparity', 
+  {
+    id: 'ageDisparity',
     name: 'Age Group Disparity',
     short: 'Age Disparity',
     weight: 20.8,
     description: 'Measures intergenerational digital divide',
     color: '#f59e0b'
   },
-  { 
-    id: 'temporalVolatility', 
+  {
+    id: 'temporalVolatility',
     name: 'Temporal Volatility',
     short: 'Volatility',
     weight: 15.2,
     description: 'Measures stability vs sudden changes',
     color: '#8b5cf6'
   },
-  { 
-    id: 'bioRefreshRate', 
+  {
+    id: 'bioRefreshRate',
     name: 'Biometric Refresh Rate',
     short: 'Bio Refresh',
     weight: 7.1,
@@ -64,9 +64,9 @@ const componentInfo = [
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
-  
+
   const data = payload[0].payload;
-  
+
   return (
     <div className="glass-card-dark rounded-lg p-3 shadow-xl border border-border/50">
       <p className="text-sm font-medium text-foreground">{data.district}</p>
@@ -93,25 +93,59 @@ export const ComponentsTab = () => {
   const { filteredData } = useDashboardStore();
   const data = filteredData();
 
+  const componentStats = useMemo(() => {
+    if (data.length === 0) {
+      return componentInfo.map(comp => ({
+        ...comp,
+        average: 0,
+        min: 0,
+        max: 0,
+      }));
+    }
+
+    return componentInfo.map(comp => {
+      const values = data.map(d => d[comp.id as keyof typeof d] as number);
+      return {
+        ...comp,
+        average: Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 100) / 100,
+        min: Math.min(...values),
+        max: Math.max(...values),
+      };
+    });
+  }, [data]);
+
+  // ADD THIS useMemo for Key Insights calculations
+  const insightsData = useMemo(() => {
+    if (componentStats.length === 0) return null;
+
+    const demoAvg = componentStats[0]?.average || 0;
+    const updateAvg = componentStats[1]?.average || 0;
+    const ageAvg = componentStats[2]?.average || 0;
+    const volatilityAvg = componentStats[3]?.average || 0;
+    const highVolatility = data.filter((d: any) => d.temporalVolatility > 50).length;
+
+    return { demoAvg, updateAvg, ageAvg, volatilityAvg, highVolatility };
+  }, [componentStats, data]);
+
   // Correlation Matrix Data
   const correlationMatrix = useMemo(() => {
     const components = ['demoUpdateIntensity', 'updateEnrolRatio', 'ageDisparity', 'temporalVolatility', 'bioRefreshRate'];
     const matrix: { x: string; y: string; value: number }[] = [];
-    
+
     components.forEach((comp1, i) => {
       components.forEach((comp2, j) => {
         if (i <= j) {
           // Calculate simplified correlation
           const values1 = data.map(d => d[comp1 as keyof typeof d] as number);
           const values2 = data.map(d => d[comp2 as keyof typeof d] as number);
-          
+
           const mean1 = values1.reduce((a, b) => a + b, 0) / values1.length;
           const mean2 = values2.reduce((a, b) => a + b, 0) / values2.length;
-          
+
           let numerator = 0;
           let denom1 = 0;
           let denom2 = 0;
-          
+
           for (let k = 0; k < values1.length; k++) {
             const diff1 = values1[k] - mean1;
             const diff2 = values2[k] - mean2;
@@ -119,9 +153,9 @@ export const ComponentsTab = () => {
             denom1 += diff1 * diff1;
             denom2 += diff2 * diff2;
           }
-          
+
           const correlation = numerator / Math.sqrt(denom1 * denom2) || 0;
-          
+
           matrix.push({
             x: componentInfo[i].short,
             y: componentInfo[j].short,
@@ -130,7 +164,7 @@ export const ComponentsTab = () => {
         }
       });
     });
-    
+
     return matrix;
   }, [data]);
 
@@ -155,7 +189,7 @@ export const ComponentsTab = () => {
       const median = sorted[Math.floor(sorted.length * 0.5)];
       const q3 = sorted[Math.floor(sorted.length * 0.75)];
       const mean = values.reduce((a, b) => a + b, 0) / values.length;
-      
+
       return {
         name: comp.short,
         min: Math.min(...values),
@@ -192,7 +226,7 @@ export const ComponentsTab = () => {
         transition={{ duration: 0.5 }}
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5"
       >
-        {componentInfo.map((comp, index) => (
+        {componentStats.map((comp, index) => (
           <motion.div
             key={comp.id}
             initial={{ opacity: 0, y: 20 }}
@@ -201,16 +235,21 @@ export const ComponentsTab = () => {
             className="glass-card-dark p-4 group hover:border-primary/30 transition-colors cursor-default"
           >
             <div className="flex items-start justify-between mb-2">
-              <div 
+              <div
                 className="h-3 w-3 rounded-full"
                 style={{ backgroundColor: comp.color }}
               />
-              <Badge variant="secondary" className="text-xs font-mono">
-                {comp.weight}%
-              </Badge>
+              <div className="glass-card-dark px-2 py-1 rounded-md">
+                <span className="text-lg font-bold text-foreground">
+                  {comp.average.toFixed(2)}
+                </span>
+              </div>
             </div>
             <h4 className="text-sm font-semibold text-foreground mb-1">{comp.short}</h4>
             <p className="text-xs text-muted-foreground line-clamp-2">{comp.description}</p>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Range: {comp.min.toFixed(1)} - {comp.max.toFixed(1)}
+            </div>
           </motion.div>
         ))}
       </motion.div>
@@ -230,21 +269,21 @@ export const ComponentsTab = () => {
           <p className="text-sm text-muted-foreground mb-4">
             Scatter plot showing correlation between demographic update intensity and overall UFI
           </p>
-          
+
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                <XAxis 
-                  type="number" 
-                  dataKey="x" 
+                <XAxis
+                  type="number"
+                  dataKey="x"
                   name="Demo Update"
                   tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                   label={{ value: 'Demo Update Intensity', position: 'bottom', fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                 />
-                <YAxis 
-                  type="number" 
-                  dataKey="y" 
+                <YAxis
+                  type="number"
+                  dataKey="y"
                   name="UFI"
                   tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                   label={{ value: 'UFI Score', angle: -90, position: 'left', fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
@@ -272,7 +311,7 @@ export const ComponentsTab = () => {
             <BarChart3 className="h-5 w-5 text-accent" />
             <h3 className="text-lg font-semibold text-foreground">Component Statistics</h3>
           </div>
-          
+
           <div className="space-y-4">
             {distributionData.map((comp) => (
               <div key={comp.name} className="space-y-1.5">
@@ -284,23 +323,23 @@ export const ComponentsTab = () => {
                 </div>
                 <div className="relative h-3 rounded-full bg-secondary">
                   {/* Q1-Q3 range */}
-                  <div 
+                  <div
                     className="absolute h-full rounded-full opacity-60"
-                    style={{ 
+                    style={{
                       left: `${comp.q1}%`,
                       width: `${comp.q3 - comp.q1}%`,
                       backgroundColor: comp.color
                     }}
                   />
                   {/* Median line */}
-                  <div 
+                  <div
                     className="absolute h-full w-0.5 bg-foreground"
                     style={{ left: `${comp.median}%` }}
                   />
                   {/* Mean marker */}
-                  <div 
+                  <div
                     className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border-2 border-background"
-                    style={{ 
+                    style={{
                       left: `${comp.mean}%`,
                       backgroundColor: comp.color
                     }}
@@ -331,29 +370,29 @@ export const ComponentsTab = () => {
         <p className="text-sm text-muted-foreground mb-4">
           Normalized component contributions for top districts
         </p>
-        
+
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topByComponent} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-              <XAxis 
-                type="number" 
+              <XAxis
+                type="number"
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
               />
-              <YAxis 
-                type="category" 
+              <YAxis
+                type="category"
                 dataKey="name"
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                 width={80}
               />
-              <Tooltip 
-                contentStyle={{ 
+              <Tooltip
+                contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px'
                 }}
               />
-              <Legend 
+              <Legend
                 wrapperStyle={{ fontSize: 11 }}
               />
               <Bar dataKey="demoUpdate" stackId="a" fill={componentInfo[0].color} name="Demo Update" />
@@ -377,28 +416,62 @@ export const ComponentsTab = () => {
           <Info className="h-5 w-5 text-accent" />
           <h3 className="text-lg font-semibold text-foreground">Key Statistical Insights</h3>
         </div>
-        
+
         <div className="grid gap-4 sm:grid-cols-3">
+          {/* Primary Driver */}
           <div className="rounded-lg bg-primary/5 border border-primary/10 p-4">
             <h4 className="text-sm font-semibold text-foreground mb-1">Primary Driver</h4>
-            <p className="text-xs text-muted-foreground">
-              Demographic mobility drives <span className="text-primary font-bold">28.8%</span> of UFI variance, 
-              indicating socioeconomic factors dominate friction patterns.
-            </p>
+            {insightsData && (() => {
+              const isPrimaryDriver = insightsData.demoAvg > insightsData.updateAvg;
+              const maxComponent = isPrimaryDriver ? componentStats[0] : componentStats[1];
+              const percentage = componentInfo[isPrimaryDriver ? 0 : 1].weight;
+
+              return (
+                <p className="text-xs text-muted-foreground">
+                  {maxComponent?.short} drives{' '}
+                  <span className="text-primary font-bold">{percentage}%</span> of UFI
+                  variance, indicating socioeconomic factors dominate friction patterns.
+                  Current average:{' '}
+                  <span className="text-primary font-bold">{maxComponent?.average.toFixed(2)}</span>
+                </p>
+              );
+            })()}
           </div>
+
+          {/* Digital Divide */}
           <div className="rounded-lg bg-accent/5 border border-accent/10 p-4">
             <h4 className="text-sm font-semibold text-foreground mb-1">Digital Divide</h4>
-            <p className="text-xs text-muted-foreground">
-              Age disparity shows <span className="text-accent font-bold">moderate correlation</span> with UFI, 
-              suggesting targeted elderly outreach could reduce friction.
-            </p>
+            {insightsData && (() => {
+              const correlationStrength = insightsData.ageAvg > 15 ? 'strong' : insightsData.ageAvg > 5 ? 'moderate' : 'low';
+              const color = insightsData.ageAvg > 15 ? 'text-red-500' : insightsData.ageAvg > 5 ? 'text-accent' : 'text-green-500';
+
+              return (
+                <p className="text-xs text-muted-foreground">
+                  Age disparity shows{' '}
+                  <span className={`${color} font-bold`}>{correlationStrength}</span>{' '}
+                  correlation with UFI at{' '}
+                  <span className={`${color} font-bold`}>{insightsData.ageAvg.toFixed(2)}</span>,
+                  suggesting targeted elderly outreach could reduce friction.
+                </p>
+              );
+            })()}
           </div>
+
+          {/* Component Independence */}
           <div className="rounded-lg bg-emerald-500/5 border border-emerald-500/10 p-4">
             <h4 className="text-sm font-semibold text-foreground mb-1">Component Independence</h4>
-            <p className="text-xs text-muted-foreground">
-              Low correlation between components <span className="text-emerald-500 font-bold">validates</span> the 
-              multi-dimensional approach of UFI measurement.
-            </p>
+            {insightsData && (() => {
+              return (
+                <p className="text-xs text-muted-foreground">
+                  Low correlation between components validates the multi-dimensional UFI
+                  approach. Analyzing{' '}
+                  <span className="text-emerald-500 font-bold">{data.length}</span>{' '}
+                  districts with volatility avg{' '}
+                  <span className="text-emerald-500 font-bold">{insightsData.volatilityAvg.toFixed(2)}</span>
+                  . {insightsData.highVolatility} show high temporal volatility.
+                </p>
+              );
+            })()}
           </div>
         </div>
       </motion.div>

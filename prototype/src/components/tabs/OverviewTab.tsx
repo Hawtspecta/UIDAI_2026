@@ -29,7 +29,7 @@ const COLORS = {
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
-  
+
   return (
     <div className="glass-card-dark rounded-lg p-3 shadow-xl border border-border/50">
       <p className="text-sm font-medium text-foreground">{label}</p>
@@ -53,12 +53,12 @@ export const OverviewTab = () => {
       count: 0,
       start: i * 10,
     }));
-    
+
     data.forEach(d => {
       const bucket = Math.min(Math.floor(d.ufi / 10), 9);
       buckets[bucket].count++;
     });
-    
+
     return buckets;
   }, [data]);
 
@@ -70,18 +70,18 @@ export const OverviewTab = () => {
       'High Friction': 0,
       'Very High Friction': 0,
     };
-    
+
     data.forEach(d => {
       counts[d.ufiCategory]++;
     });
-    
+
     return Object.entries(counts).map(([name, value]) => ({
       name,
       value,
-      color: name === 'Low Friction' ? COLORS.low 
+      color: name === 'Low Friction' ? COLORS.low
         : name === 'Moderate Friction' ? COLORS.moderate
-        : name === 'High Friction' ? COLORS.high
-        : COLORS.critical,
+          : name === 'High Friction' ? COLORS.high
+            : COLORS.critical,
     }));
   }, [data]);
 
@@ -100,6 +100,7 @@ export const OverviewTab = () => {
 
   // State Performance Summary
   const topStates = useMemo(() => {
+    if (!stateStats || stateStats.length === 0) return [];
     return stateStats.slice(0, 8).map(s => ({
       name: s.state.length > 12 ? s.state.slice(0, 12) + '...' : s.state,
       fullName: s.state,
@@ -144,34 +145,34 @@ export const OverviewTab = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="h-64 md:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={histogramData} barCategoryGap="10%">
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-              <XAxis 
-                dataKey="range" 
+              <XAxis
+                dataKey="range"
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
               />
-              <YAxis 
+              <YAxis
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar 
-                dataKey="count" 
+              <Bar
+                dataKey="count"
                 name="Districts"
                 radius={[4, 4, 0, 0]}
               >
                 {histogramData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
+                  <Cell
+                    key={`cell-${index}`}
                     fill={
                       entry.start < 25 ? COLORS.low
                         : entry.start < 50 ? COLORS.moderate
-                        : entry.start < 75 ? COLORS.high
-                        : COLORS.critical
+                          : entry.start < 75 ? COLORS.high
+                            : COLORS.critical
                     }
                     opacity={0.9}
                   />
@@ -192,7 +193,7 @@ export const OverviewTab = () => {
           className="glass-card-dark p-6"
         >
           <h3 className="mb-4 text-lg font-semibold text-foreground">UFI Categories</h3>
-          
+
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -218,12 +219,12 @@ export const OverviewTab = () => {
 
           <div className="mt-4 grid grid-cols-2 gap-2">
             {categoryData.map(cat => (
-              <div 
+              <div
                 key={cat.name}
                 className="flex items-center gap-2 rounded-lg bg-secondary/30 p-2"
               >
-                <div 
-                  className="h-3 w-3 rounded-full" 
+                <div
+                  className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: cat.color }}
                 />
                 <div className="flex-1 min-w-0">
@@ -249,8 +250,8 @@ export const OverviewTab = () => {
               <AlertTriangle className="h-5 w-5 text-orange-500" />
               <h3 className="text-lg font-semibold text-foreground">Top Friction Districts</h3>
             </div>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => setActiveTab('geospatial')}
               className="gap-1 text-xs text-primary"
@@ -258,7 +259,7 @@ export const OverviewTab = () => {
               View Map <ArrowRight className="h-3 w-3" />
             </Button>
           </div>
-          
+
           <div className="space-y-2">
             {topDistricts.map((district, index) => (
               <div
@@ -275,7 +276,7 @@ export const OverviewTab = () => {
                   <p className="text-xs text-muted-foreground">{district.state}</p>
                 </div>
                 <div className="text-right">
-                  <p 
+                  <p
                     className="text-sm font-bold"
                     style={{ color: district.fill }}
                   >
@@ -299,7 +300,7 @@ export const OverviewTab = () => {
           <TrendingUp className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-semibold text-foreground">State Performance Summary</h3>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -312,48 +313,56 @@ export const OverviewTab = () => {
               </tr>
             </thead>
             <tbody>
-              {topStates.map((state) => (
-                <tr 
-                  key={state.fullName}
-                  className="border-b border-border/20 hover:bg-secondary/20 transition-colors"
-                >
-                  <td className="py-3">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium text-foreground">{state.name}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 text-center">
-                    <span 
-                      className="text-sm font-bold"
-                      style={{ color: getUFIColor(state.ufi) }}
-                    >
-                      {state.ufi.toFixed(1)}
-                    </span>
-                  </td>
-                  <td className="py-3 text-center text-sm text-muted-foreground">
-                    {state.districts}
-                  </td>
-                  <td className="py-3 text-center">
-                    <span className={`text-sm font-medium ${state.highFriction > 5 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                      {state.highFriction}
-                    </span>
-                  </td>
-                  <td className="py-3">
-                    <div className="flex justify-end">
-                      <div className="h-2 w-24 rounded-full bg-secondary overflow-hidden">
-                        <div 
-                          className="h-full rounded-full transition-all"
-                          style={{ 
-                            width: `${state.ufi}%`,
-                            background: `linear-gradient(90deg, ${getUFIColor(state.ufi * 0.5)}, ${getUFIColor(state.ufi)})`
-                          }}
-                        />
-                      </div>
-                    </div>
+              {topStates.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-6 text-center text-sm text-muted-foreground">
+                    No state data available
                   </td>
                 </tr>
-              ))}
+              ) : (
+                topStates.map((state) => (
+                  <tr
+                    key={state.fullName}
+                    className="border-b border-border/20 hover:bg-secondary/20 transition-colors"
+                  >
+                    <td className="py-3">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium text-foreground">{state.name}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 text-center">
+                      <span
+                        className="text-sm font-bold"
+                        style={{ color: getUFIColor(state.ufi) }}
+                      >
+                        {state.ufi.toFixed(1)}
+                      </span>
+                    </td>
+                    <td className="py-3 text-center text-sm text-muted-foreground">
+                      {state.districts}
+                    </td>
+                    <td className="py-3 text-center">
+                      <span className={`text-sm font-medium ${state.highFriction > 5 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                        {state.highFriction}
+                      </span>
+                    </td>
+                    <td className="py-3">
+                      <div className="flex justify-end">
+                        <div className="h-2 w-24 rounded-full bg-secondary overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{
+                              width: `${state.ufi}%`,
+                              background: `linear-gradient(90deg, ${getUFIColor(state.ufi * 0.5)}, ${getUFIColor(state.ufi)})`
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
