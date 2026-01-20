@@ -63,6 +63,7 @@ export const OverviewTab = () => {
   }, [data]);
 
   // Category Distribution for Pie Chart
+
   const categoryData = useMemo(() => {
     const counts = {
       'Low Friction': 0,
@@ -72,17 +73,22 @@ export const OverviewTab = () => {
     };
 
     data.forEach(d => {
-      counts[d.ufiCategory]++;
+      if (d.ufiCategory && counts.hasOwnProperty(d.ufiCategory)) {
+        counts[d.ufiCategory]++;
+      }
     });
 
-    return Object.entries(counts).map(([name, value]) => ({
-      name,
-      value,
-      color: name === 'Low Friction' ? COLORS.low
-        : name === 'Moderate Friction' ? COLORS.moderate
-          : name === 'High Friction' ? COLORS.high
-            : COLORS.critical,
-    }));
+    // Filter out categories with 0 count
+    return Object.entries(counts)
+      .filter(([_, value]) => value > 0)
+      .map(([name, value]) => ({
+        name,
+        value,
+        color: name === 'Low Friction' ? COLORS.low
+          : name === 'Moderate Friction' ? COLORS.moderate
+            : name === 'High Friction' ? COLORS.high
+              : COLORS.critical,
+      }));
   }, [data]);
 
   // Top 10 High Friction Districts

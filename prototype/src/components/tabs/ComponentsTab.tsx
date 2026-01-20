@@ -114,7 +114,6 @@ export const ComponentsTab = () => {
     });
   }, [data]);
 
-  // ADD THIS useMemo for Key Insights calculations
   const insightsData = useMemo(() => {
     if (componentStats.length === 0) return null;
 

@@ -21,14 +21,26 @@ const Dashboard = () => {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading dashboard data...</p>
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-full bg-primary animate-pulse" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg font-semibold text-foreground">Loading UFI Dashboard</p>
+            <p className="text-sm text-muted-foreground">Processing 817 districts...</p>
+          </div>
+          <div className="flex gap-2 justify-center">
+            <div className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+            <div className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+            <div className="h-2 w-2 rounded-full bg-primary animate-bounce" />
+          </div>
         </div>
       </div>
     );
   }
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
@@ -51,14 +63,14 @@ const Dashboard = () => {
       <Navigation />
       <HeroSection />
       <TabNavigation />
-      
+
       <div className="container px-4 py-6 md:px-6">
         <div className="flex gap-6">
           {/* Sidebar */}
           <div className={`hidden lg:block ${sidebarOpen ? '' : 'lg:hidden'}`}>
             <FilterSidebar />
           </div>
-          
+
           {/* Main Content */}
           <main className="flex-1 min-w-0">
             <AnimatePresence mode="wait">
