@@ -145,6 +145,7 @@ UIDAI_2026/
 │   ├── figures/                     # Visualizations
 │   └── reports/                     # JSON/Text insights
 ├── notebooks/                       # EDA notebooks
+├── prototype 
 ├── run_pipeline.py                 # One-command execution
 └── README.md
 ```
@@ -309,7 +310,7 @@ All three UIDAI-provided datasets integrated:
 
 For questions or collaboration:
 - **Email:** [nayaksahana0307@gmail.com]
-- **GitHub:** [Hawtspecta]
+- **GitHub:** [https://github.com/Hawtspecta]
 - **LinkedIn:** [https://www.linkedin.com/in/sahana-s-nayak]
 
 ---
