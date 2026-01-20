@@ -67,7 +67,7 @@ export const FilterSidebar = () => {
       }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className={cn(
-        'glass-card-dark w-72 shrink-0 overflow-hidden border-r border-border/40 p-4',
+        'glass-card-dark w-72 shrink-0 overflow-hidden border-r border-border/40 p-4 lg:overflow-auto',
         !sidebarOpen && 'hidden md:block'
       )}
     >

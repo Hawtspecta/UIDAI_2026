@@ -10,9 +10,10 @@ import { ComponentsTab } from '@/components/tabs/ComponentsTab';
 import { InsightsTab } from '@/components/tabs/InsightsTab';
 import { PredictiveTab } from '@/components/tabs/PredictiveTab';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet'; // Replaced Drawer with Sheet
 
 const Dashboard = () => {
-  const { activeTab, initializeData, isLoading, sidebarOpen } = useDashboardStore();
+  const { activeTab, initializeData, isLoading, sidebarOpen, mobileFiltersOpen, setMobileFiltersOpen } = useDashboardStore();
 
   useEffect(() => {
     initializeData();
@@ -73,6 +74,13 @@ const Dashboard = () => {
 
           {/* Main Content */}
           <main className="flex-1 min-w-0">
+            {/* Mobile Filter Sheet - full screen */}
+            <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+              <SheetContent side="left" className="w-80 p-4 overflow-y-auto">
+                <SheetDescription className="sr-only">Adjust filters to customize the dashboard view.</SheetDescription>
+                <FilterSidebar />
+              </SheetContent>
+            </Sheet>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}

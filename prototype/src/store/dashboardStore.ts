@@ -41,6 +41,8 @@ interface DashboardState {
 
   // Actions
   initializeData: () => void;
+  mobileFiltersOpen: boolean;
+  setMobileFiltersOpen: (open: boolean) => void;
 }
 
 const initialFilters: FilterState = {
@@ -168,4 +170,9 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     }
     document.documentElement.classList.add('dark');
   },
+
+  mobileFiltersOpen: false,
+  setMobileFiltersOpen: (open) => set({ mobileFiltersOpen: open }),
 }));
+
+export default useDashboardStore;

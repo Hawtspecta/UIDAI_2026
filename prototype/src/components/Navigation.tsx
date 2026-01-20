@@ -3,7 +3,7 @@ import {
   Sun, 
   Moon, 
   HelpCircle, 
-  Menu,
+  Filter,
   X,
   BarChart3,
   Shield
@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog';
 
 export const Navigation = () => {
-  const { isDarkMode, toggleDarkMode, sidebarOpen, setSidebarOpen } = useDashboardStore();
+  const { isDarkMode, toggleDarkMode,  mobileFiltersOpen, setMobileFiltersOpen } = useDashboardStore();
 
   return (
     <motion.nav 
@@ -36,9 +36,9 @@ export const Navigation = () => {
             variant="ghost"
             size="icon"
             className="md:hidden"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
           >
-            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileFiltersOpen ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
           </Button>
           
           <div className="flex items-center gap-3">
