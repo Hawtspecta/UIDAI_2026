@@ -76,6 +76,7 @@ where:
 - **Mean UFI: 37.41** (moderate, stable system)
 - **24.4% districts:** Low friction (well-served)
 - **2.9% districts:** Very high friction (need intervention)
+- **11 update desert districts** requiring infrastructure support
 
 ### Critical Insights
 
@@ -150,6 +151,10 @@ UIDAI_2026/
 ```
 
 ---
+
+##📺 Demo
+
+**Live Dashboard:** https://update-friction-index.lovable.app
 
 ## 🚀 Quick Start
 
