@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { getUFIColor } from '@/data/ufiData';
-import { 
-  AlertTriangle, 
-  MapPin, 
-  Users, 
-  TrendingUp, 
-  Download, 
+import {
+  AlertTriangle,
+  MapPin,
+  Users,
+  TrendingUp,
+  Download,
   ArrowRight,
   Lightbulb,
   Target,
@@ -38,13 +38,13 @@ interface InsightCardProps {
   delay?: number;
 }
 
-const InsightCard = ({ 
-  icon, 
-  iconBg, 
-  title, 
-  subtitle, 
-  count, 
-  children, 
+const InsightCard = ({
+  icon,
+  iconBg,
+  title,
+  subtitle,
+  count,
+  children,
   recommendation,
   priority = 'medium',
   delay = 0
@@ -115,15 +115,15 @@ export const InsightsTab = () => {
   // Update Deserts (Low UFI but high population)
   const updateDeserts = useMemo(() => {
     return data
-      .filter(d => d.ufi < 20 && d.population > 1000000)
-      .sort((a, b) => b.population - a.population)
+      .filter(d => d.ufi < 30 && d.totalEnrollments < 100000)  // Low activity, low enrollments
+      .sort((a, b) => a.demoUpdateIntensity - b.demoUpdateIntensity)  // Lowest demo update first
       .slice(0, 10);
   }, [data]);
 
   // High Friction Zones
   const highFrictionZones = useMemo(() => {
     return data
-      .filter(d => d.ufi >= 70)
+      .filter(d => d.ufi >= 50)  // Changed from >= 70
       .sort((a, b) => b.ufi - a.ufi)
       .slice(0, 10);
   }, [data]);
@@ -131,9 +131,9 @@ export const InsightsTab = () => {
   // Age Gap Crisis
   const ageGapCrisis = useMemo(() => {
     return data
-      .filter(d => d.ageDisparity >= 60)
+      .filter(d => d.ageDisparity >= 2)  // Changed from >= 15 - much lower threshold
       .sort((a, b) => b.ageDisparity - a.ageDisparity)
-      .slice(0, 10);
+      .slice(0, 20);  // Increased slice from 10 to 20 for more options
   }, [data]);
 
   // State Performance
@@ -150,7 +150,7 @@ export const InsightsTab = () => {
   const metrics = useMemo(() => {
     const totalPop = data.reduce((sum, d) => sum + d.population, 0);
     const criticalPop = data.filter(d => d.ufi >= 70).reduce((sum, d) => sum + d.population, 0);
-    
+
     return {
       criticalPopulation: (criticalPop / 1000000).toFixed(1),
       potentialImpact: (criticalPop / totalPop * 100).toFixed(1),
@@ -158,6 +158,40 @@ export const InsightsTab = () => {
       estimatedROI: 2.4,
     };
   }, [data]);
+
+  const getUpdateDesertsRecommendation = () => {
+    if (updateDeserts.length === 0) return "No data available";
+    const totalPop = updateDeserts.reduce((sum, d) => sum + d.population, 0);
+    const avgUFI = updateDeserts.reduce((sum, d) => sum + d.ufi, 0) / updateDeserts.length;
+    const unitsNeeded = Math.ceil(updateDeserts.length / 3);
+
+    return `Deploy ${unitsNeeded} mobile enrollment units to ${updateDeserts.length} underserved districts. Target population: ${(totalPop / 1000000).toFixed(1)}M. Current avg UFI: ${avgUFI.toFixed(1)}. Estimated impact: ${(totalPop * 0.15 / 1000000).toFixed(1)}M additional citizens served.`;
+  };
+
+  const getHighFrictionRecommendation = () => {
+    if (highFrictionZones.length === 0) return "No data available";
+    const avgUFI = highFrictionZones.reduce((sum, d) => sum + d.ufi, 0) / highFrictionZones.length;
+    const criticalCount = highFrictionZones.filter(d => d.ufi >= 80).length;
+    const capacityIncrease = Math.ceil(avgUFI / 50 * 40);
+
+    return `Increase UIDAI center capacity by ${capacityIncrease}% in ${highFrictionZones.length} critical zones (${criticalCount} at critical level). Avg UFI: ${avgUFI.toFixed(1)}. Estimated cost: ₹${(highFrictionZones.length * 5).toFixed(0)} Cr. Expected UFI reduction: ${Math.min(avgUFI - 30, 25).toFixed(1)} points.`;
+  };
+
+  const getAgeGapRecommendation = () => {
+    if (ageGapCrisis.length === 0) return "No data available";
+    const avgDisparity = ageGapCrisis.reduce((sum, d) => sum + d.ageDisparity, 0) / ageGapCrisis.length;
+    const targetPopulation = ageGapCrisis.reduce((sum, d) => sum + d.population, 0) / 1000000;
+
+    return `Launch elderly-focused outreach campaign in top ${Math.min(ageGapCrisis.length, 15)} districts with age disparity avg: ${avgDisparity.toFixed(1)}. Target: ${targetPopulation.toFixed(1)}M elderly citizens. Include assisted enrollment camps and community centers. Staffing: 200+ trained counselors.`;
+  };
+
+  const getStatePerformanceRecommendation = () => {
+    const bestState = stateStats[0];
+    const worstState = stateStats[stateStats.length - 1];
+    const improvement = (worstState.meanUFI - bestState.meanUFI).toFixed(1);
+
+    return `Study best practices from top performer ${bestState.state} (UFI: ${bestState.meanUFI.toFixed(1)}). Implement cross-state knowledge transfer with ${worstState.state} (UFI: ${worstState.meanUFI.toFixed(1)}). Potential improvement: ${improvement} UFI points. Focus on: infrastructure, staffing, technology adoption.`;
+  };
 
   return (
     <div className="space-y-6">
@@ -214,13 +248,13 @@ export const InsightsTab = () => {
           title="Update Deserts"
           subtitle="High population, minimal update activity"
           count={updateDeserts.length}
-          recommendation="Deploy 15 mobile enrollment units to underserved areas. Estimated impact: 2.3M additional citizens served."
+          recommendation={getUpdateDesertsRecommendation()}
           priority="medium"
           delay={0.1}
         >
           <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
             {updateDeserts.slice(0, 5).map((d, i) => (
-              <div 
+              <div
                 key={`${d.state}-${d.district}-${i}`}
                 className="flex items-center justify-between p-2 rounded-lg bg-secondary/30"
               >
@@ -248,13 +282,13 @@ export const InsightsTab = () => {
           title="High Friction Zones"
           subtitle="Severe system stress requiring immediate action"
           count={highFrictionZones.length}
-          recommendation="Increase UIDAI center capacity by 40% in critical zones. Estimated cost: ₹45 Cr. Expected UFI reduction: 18 points."
+          recommendation={getHighFrictionRecommendation()}
           priority="critical"
           delay={0.2}
         >
           <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
             {highFrictionZones.slice(0, 5).map((d, i) => (
-              <div 
+              <div
                 key={`${d.state}-${d.district}-${i}`}
                 className="flex items-center justify-between p-2 rounded-lg bg-red-500/5 border border-red-500/10"
               >
@@ -280,13 +314,13 @@ export const InsightsTab = () => {
           title="Digital Age Gap Crisis"
           subtitle="Elderly population significantly underserved"
           count={ageGapCrisis.length}
-          recommendation="Launch elderly-focused outreach campaign in top 10 districts. Target: 2M elderly citizens. Includes assisted enrollment camps."
+          recommendation={getAgeGapRecommendation()}
           priority="high"
           delay={0.3}
         >
           <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
             {ageGapCrisis.slice(0, 5).map((d, i) => (
-              <div 
+              <div
                 key={`${d.state}-${d.district}-${i}`}
                 className="flex items-center justify-between p-2 rounded-lg bg-secondary/30"
               >
@@ -311,7 +345,7 @@ export const InsightsTab = () => {
           iconBg="bg-emerald-500/10"
           title="State Performance Rankings"
           subtitle="Comparative analysis across states"
-          recommendation="Study best practices from low-friction states like Kerala and Goa. Implement cross-state knowledge transfer programs."
+          recommendation={getStatePerformanceRecommendation()}
           priority="low"
           delay={0.4}
         >
@@ -319,19 +353,19 @@ export const InsightsTab = () => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statePerformance} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                <XAxis 
-                  type="number" 
+                <XAxis
+                  type="number"
                   domain={[0, 100]}
                   tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
                 />
-                <YAxis 
-                  type="category" 
+                <YAxis
+                  type="category"
                   dataKey="name"
                   tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
                   width={90}
                 />
-                <Tooltip 
-                  contentStyle={{ 
+                <Tooltip
+                  contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
@@ -339,8 +373,8 @@ export const InsightsTab = () => {
                   }}
                   formatter={(value: number) => [value.toFixed(1), 'Mean UFI']}
                 />
-                <Bar 
-                  dataKey="ufi" 
+                <Bar
+                  dataKey="ufi"
                   radius={[0, 4, 4, 0]}
                   fill="hsl(var(--primary))"
                 />
@@ -363,7 +397,7 @@ export const InsightsTab = () => {
         <p className="text-sm text-muted-foreground mb-4 max-w-lg mx-auto">
           Use our Predictive Analytics tool to simulate policy interventions and calculate ROI before implementation.
         </p>
-        <Button 
+        <Button
           onClick={() => setActiveTab('predictive')}
           className="gap-2"
         >
