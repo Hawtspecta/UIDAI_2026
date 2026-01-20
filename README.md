@@ -4,7 +4,6 @@
 > **Unlocking Societal Trends Through Identity Update Patterns**
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Submission%20Ready-success.svg)]()
 
 ---
@@ -295,12 +294,6 @@ All three UIDAI-provided datasets integrated:
 **Team Member:** [Labdhi Shah]  
 **Institution:** [Dwarkadas J Sanghvi College of Engineering]  
 **Contact:** [engineeringlabs28@gmail.com]
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
