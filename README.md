@@ -152,7 +152,7 @@ UIDAI_2026/
 
 ---
 
-##📺 Demo
+📺 Demo
 
 **Live Dashboard:** https://update-friction-index.lovable.app
 
